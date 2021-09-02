@@ -21,5 +21,4 @@ public class IndexController {
         modelMap.put("admin",admin);
         return "index";
     }
-
 }

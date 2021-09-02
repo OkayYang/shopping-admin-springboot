@@ -62,6 +62,11 @@ public class ShiroConfiguration {
         filterChainDefinitionMap.put("/admin/error","anon");
         filterChainDefinitionMap.put("/admin/login/check","anon");
         filterChainDefinitionMap.put("/static/**", "anon");
+        filterChainDefinitionMap.put("/css/**", "anon");
+        filterChainDefinitionMap.put("/js/**", "anon");
+        filterChainDefinitionMap.put("/fonts/**", "anon");
+        filterChainDefinitionMap.put("/images/**", "anon");
+        filterChainDefinitionMap.put("/lib/**", "anon");
         filterChainDefinitionMap.put("/admin/login/exit", "logout");;
         filterChainDefinitionMap.put("/**", "authc");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
@@ -76,6 +81,7 @@ public class ShiroConfiguration {
         securityManager.setRealm(userRealm);
         return securityManager;
     }
+
 
 
 

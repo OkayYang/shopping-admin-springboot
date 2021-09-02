@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace一般与接口名一致，parameterType单一参数类型,id一般与对应方法一致，resultType与返回类型一致-->
+<mapper namespace="com.yang.shopping.mapper.OrderRecordMapper">
+    <resultMap type="OrderRecord" id="RecordResult">
+        <result property="rid"    column="rid"    />
+        <result property="uname"    column="uname"    />
+        <result property="gname"    column="gname"    />
+        <result property="num"    column="num"    />
+        <result property="price"    column="price"    />
+        <result property="dateTime" column="datetime"/>
+    </resultMap>
+
+    <sql id="selectRecordVo">
+        select r.rid, u.uname, g.gname, r.num, r.num*g.price as price,r.datetime from record r ,user u,goods g
+
+    </sql>
+
+    <select id="selectRecordList" parameterType="OrderRecord" resultMap="RecordResult">
+        <include refid="selectRecordVo"/>
+        /*where r.gid = g.id and r.uid = u.uid*/
+
+        <where>
+            <if test="rid != null "> and rid = #{rid}</if>
+            and r.gid = g.id and r.uid = u.uid
+        </where>
+    </select>
+    <delete id="deleteRecordByRids" parameterType="Int">
+        delete from record where rid in
+        <foreach item="rid" collection="array" open="(" separator="," close=")">
+            #{rid}
+        </foreach>
+    </delete>
+    <select id="countOrder" resultType="Int">
+        select count(rid) from record
+    </select>
+    <select id="selectRecordListByPage" resultMap="RecordResult">
+        <include refid="selectRecordVo"/>
+        where r.gid = g.id and r.uid = u.uid
+        LIMIT #{page},#{limit}
+
+    </select>
+
+
+</mapper>
+

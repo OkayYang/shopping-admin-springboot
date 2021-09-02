@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace一般与接口名一致，parameterType单一参数类型,id一般与对应方法一致，resultType与返回类型一致-->
+<mapper namespace="com.yang.shopping.mapper.UserMapper">
+
+    <resultMap type="User" id="UserResult">
+        <result property="uid"    column="uid"    />
+        <result property="uname"    column="uname"    />
+        <result property="upd"    column="upd"    />
+        <result property="usex"    column="usex"    />
+        <result property="uage"    column="uage"    />
+        <result property="uphone"    column="uphone"    />
+        <result property="ubalance"    column="ubalance"    />
+        <result property="udate"    column="udate"    />
+    </resultMap>
+
+    <sql id="selectUserVo">
+        select uid, uname, upd, usex, uage, uphone, ubalance, udate from user
+    </sql>
+
+    <select id="selectUserList" parameterType="User" resultMap="UserResult">
+        <include refid="selectUserVo"/>
+        <where>
+            <if test="uname != null  and uname != ''"> and uname like concat('%', #{uname}, '%')</if>
+            <if test="upd != null  and upd != ''"> and upd = #{upd}</if>
+            <if test="usex != null  and usex != ''"> and usex = #{usex}</if>
+            <if test="uage != null "> and uage = #{uage}</if>
+            <if test="uphone != null "> and uphone = #{uphone}</if>
+            <if test="ubalance != null "> and ubalance = #{ubalance}</if>
+            <if test="udate != null "> and udate = #{udate}</if>
+        </where>
+    </select>
+
+    <select id="selectUserByUid" parameterType="Long" resultMap="UserResult">
+        <include refid="selectUserVo"/>
+        where uid = #{uid}
+    </select>
+
+    <insert id="insertUser" parameterType="User" useGeneratedKeys="true" keyProperty="uid">
+        insert into user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="uname != null and uname != ''">uname,</if>
+            <if test="upd != null and upd != ''">upd,</if>
+            <if test="usex != null">usex,</if>
+            <if test="uage != null">uage,</if>
+            <if test="uphone != null">uphone,</if>
+            <if test="ubalance != null">ubalance,</if>
+            <if test="udate != null">udate,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="uname != null and uname != ''">#{uname},</if>
+            <if test="upd != null and upd != ''">#{upd},</if>
+            <if test="usex != null">#{usex},</if>
+            <if test="uage != null">#{uage},</if>
+            <if test="uphone != null">#{uphone},</if>
+            <if test="ubalance != null">#{ubalance},</if>
+            <if test="udate != null">#{udate},</if>
+        </trim>
+    </insert>
+
+    <update id="updateUser" parameterType="User">
+        update user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="uname != null and uname != ''">uname = #{uname},</if>
+            <if test="upd != null and upd != ''">upd = #{upd},</if>
+            <if test="usex != null">usex = #{usex},</if>
+            <if test="uage != null">uage = #{uage},</if>
+            <if test="uphone != null">uphone = #{uphone},</if>
+            <if test="ubalance != null">ubalance = #{ubalance},</if>
+            <if test="udate != null">udate = #{udate},</if>
+        </trim>
+        where uid = #{uid}
+    </update>
+
+    <delete id="deleteUserByUid" parameterType="Long">
+        delete from user where uid = #{uid}
+    </delete>
+
+    <delete id="deleteUserByUids" parameterType="Int">
+        delete from user where uid in
+        <foreach item="uid" collection="array" open="(" separator="," close=")">
+            #{uid}
+        </foreach>
+    </delete>
+    <select id="countUser" resultType="Int">
+        select count(uid) from user
+    </select>
+    <select id="selectUserListByPage" resultMap="UserResult">
+        <include refid="selectUserVo"/>
+        LIMIT #{page},#{limit}
+    </select>
+
+
+</mapper>
+

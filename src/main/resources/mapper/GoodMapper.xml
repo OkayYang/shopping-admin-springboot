@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace一般与接口名一致，parameterType单一参数类型,id一般与对应方法一致，resultType与返回类型一致-->
+<mapper namespace="com.yang.shopping.mapper.GoodMapper">
+    <resultMap type="Good" id="GoodsResult">
+        <result property="id"    column="id"    />
+        <result property="gname"    column="gname"    />
+        <result property="bid"    column="bid"    />
+        <result property="price"    column="price"    />
+        <result property="stock"    column="stock"    />
+    </resultMap>
+
+    <sql id="selectGoodsVo">
+        select id, gname, bid, price, stock from goods
+    </sql>
+
+    <select id="selectGoodsList" parameterType="Good" resultMap="GoodsResult">
+        <include refid="selectGoodsVo"/>
+        <where>
+            <if test="gname != null  and gname != ''"> and gname like concat('%', #{gname}, '%')</if>
+            <if test="bid != null "> and bid = #{bid}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="stock != null "> and stock = #{stock}</if>
+        </where>
+    </select>
+
+    <select id="selectGoodsListByPage"  resultMap="GoodsResult">
+        <include refid="selectGoodsVo"/>
+        LIMIT #{page},#{limit}
+    </select>
+
+    <insert id="insertGoods" parameterType="Good" useGeneratedKeys="true" keyProperty="id">
+        insert into goods
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="gname != null and gname != ''">gname,</if>
+            <if test="bid != null">bid,</if>
+            <if test="price != null">price,</if>
+            <if test="stock != null">stock,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="gname != null and gname != ''">#{gname},</if>
+            <if test="bid != null">#{bid},</if>
+            <if test="price != null">#{price},</if>
+            <if test="stock != null">#{stock},</if>
+        </trim>
+    </insert>
+
+    <update id="updateGoods" parameterType="Good">
+        update goods
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="gname != null and gname != ''">gname = #{gname},</if>
+            <if test="bid != null">bid = #{bid},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="stock != null">stock = #{stock},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteGoodsById" parameterType="Long">
+        delete from goods where id = #{id}
+    </delete>
+
+    <delete id="deleteGoodsByIds" parameterType="Int">
+        delete from goods where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="countGood" resultType="Int">
+      select count(id) from goods
+    </select>
+    <select id="totalSale" resultType="Double">
+        select COALESCE(sum(goods.price*record.num),0.0) from record,goods where record.gid = goods.id
+    </select>
+    <select id="todaySale" resultType="Double" parameterType="String">
+        select COALESCE(sum(goods.price*record.num), 0.0) from record,goods where record.datetime like #{date} and record.gid = goods.id
+    </select>
+
+
+</mapper>
+

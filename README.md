@@ -1,5 +1,5 @@
 # shopping-web-admin
-
+超市后台管理系统
 商品管理系统后端web界面
 采用springboot+shiro框架
 
